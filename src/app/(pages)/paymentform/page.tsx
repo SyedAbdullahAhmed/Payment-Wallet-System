@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link'; // Optional, for navigation
+import Spinner from '@/app/components/Spinner';
+import { z } from 'zod';
+import wait from '@/app/utils/wait';
 
 export default function PaymentPage() {
   const [cardholderName, setCardholderName] = useState('');
@@ -11,6 +14,7 @@ export default function PaymentPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{ cardholderName?: string; cardNumber?: string; expiryDate?: string; cvc?: string; }>({});
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
@@ -47,37 +51,57 @@ export default function PaymentPage() {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
-    setSuccessMessage(null);
 
-    // Basic client-side validation
-    if (!cardholderName.trim() || !cardNumber.trim() || !expiryDate.trim() || !cvc.trim()) {
-      setError('All payment fields are required.');
-      setIsLoading(false);
-      return;
-    }
-    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
-      setError('Expiry date must be in MM/YY format.');
-      setIsLoading(false);
-      return;
-    }
-    // Add more robust validation (Luhn check for card number, expiry date in future, CVC length)
-    // In a real app, this validation would be part of the payment gateway's SDK.
+    setError(null);
+    setFormErrors({}); // Reset individual field errors
 
-    // --- SIMULATION: DO NOT DO THIS IN PRODUCTION ---
-    console.log('Simulating payment submission with:', {
-      cardholderName,
-      cardNumber: cardNumber.replace(/\s/g, ''), // Send without spaces
-      expiryDate,
-      cvc,
+
+
+    const paymentSchema = z.object({
+      cardholderName: z
+        .string()
+        .min(1, "Cardholder name is required")
+        .max(100, "Cardholder name can't exceed 100 characters")
+        .regex(/^[a-zA-Z\s.'-]+$/, "Cardholder name can only contain letters, spaces, apostrophes, periods, and hyphens"),
+
+      cardNumber: z
+        .string()
+        .min(19, "Card number must be 16 digits formatted as '0000 0000 0000 0000'")
+        .max(19, "Card number must be 16 digits formatted as '0000 0000 0000 0000'")
+        .regex(/^(\d{4} \d{4} \d{4} \d{4})$/, "Card number must be in format '0000 0000 0000 0000'"),
+
+      expiryDate: z
+        .string()
+        .length(5, "Expiry date must be 5 characters in MM/YY format")
+        .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Expiry date must be in MM/YY format"),
+
+      cvc: z
+        .string()
+        .min(3, "CVC must be 3 or 4 digits")
+        .max(4, "CVC must be 3 or 4 digits")
+        .regex(/^\d{3,4}$/, "CVC must be 3 or 4 digits"),
     });
-    // In a real app:
-    // 1. Use payment gateway's SDK to create a token from card details.
-    // 2. Send the token to your backend.
-    // 3. Your backend uses the token to charge the card via the payment gateway's API.
+
+    const result = paymentSchema.safeParse({ cardholderName, cardNumber, expiryDate, cvc });
+
+    if (!result.success) {
+      const fieldErrors: { cardholderName?: string; cardNumber?: string; expiryDate?: string; cvc?: string; } = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof typeof fieldErrors;
+        fieldErrors[field] = issue.message;
+      });
+      setFormErrors(fieldErrors);
+      setIsLoading(false);
+      return;
+    }
+
+
+
 
     try {
       // Simulate API call to your backend (with a token, not raw details)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      setIsLoading(true);
+      await wait(3000);
       setSuccessMessage('Payment successful! (Simulated)');
       // Optionally reset form
       // setCardholderName('');
@@ -126,6 +150,9 @@ export default function PaymentPage() {
               placeholder="Cardholder Name"
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
+            {formErrors.cardholderName && (
+              <p className="text-sm text-red-600 mt-1 ">{formErrors.cardholderName.length > 15 ? formErrors.cardholderName.slice(0, 45) + '...' : formErrors.cardholderName}</p>
+            )}
           </div>
 
           <div>
@@ -147,65 +174,67 @@ export default function PaymentPage() {
               placeholder="0000 0000 0000 0000"
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
+            {formErrors.cardNumber && (
+              <p className="text-sm text-red-600 mt-1 ">{formErrors.cardNumber.length > 15 ? formErrors.cardNumber.slice(0, 45) + '...' : formErrors.cardNumber}</p>
+            )}
           </div>
 
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label
-                htmlFor="expiryDate"
-                className="block text-sm font-medium text-slate-700 sr-only"
-              >
-                Expiry Date (MM/YY)
-              </label>
-              <input
-                id="expiryDate"
-                name="expiryDate"
-                type="text" // Use text to allow for slash
-                inputMode="numeric"
-                autoComplete="cc-exp"
-                required
-                value={expiryDate}
-                onChange={handleExpiryDateChange}
-                placeholder="MM/YY"
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
-              />
-            </div>
-            <div className="w-1/2">
-              <label
-                htmlFor="cvc"
-                className="block text-sm font-medium text-slate-700 sr-only"
-              >
-                CVC
-              </label>
-              <input
-                id="cvc"
-                name="cvc"
-                type="text" // Use text as type="password" can sometimes be annoying for CVC
-                inputMode="numeric"
-                autoComplete="cc-csc"
-                required
-                value={cvc}
-                onChange={handleCvcChange}
-                placeholder="CVC"
-                className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
-              />
-            </div>
+          {/* <div className="flex space-x-4"> */}
+          <div >
+            <label
+              htmlFor="expiryDate"
+              className="block text-sm font-medium text-slate-700 sr-only"
+            >
+              Expiry Date (MM/YY)
+            </label>
+            <input
+              id="expiryDate"
+              name="expiryDate"
+              type="text" // Use text to allow for slash
+              inputMode="numeric"
+              autoComplete="cc-exp"
+              required
+              value={expiryDate}
+              onChange={handleExpiryDateChange}
+              placeholder="MM/YY"
+              className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
+            />
+            {formErrors.expiryDate && (
+              <p className="text-sm text-red-600 mt-1 ">{formErrors.expiryDate.length > 15 ? formErrors.expiryDate.slice(0, 45) + '...' : formErrors.expiryDate}</p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="cvc"
+              className="block text-sm font-medium text-slate-700 sr-only"
+            >
+              CVC
+            </label>
+            <input
+              id="cvc"
+              name="cvc"
+              type="text" // Use text as type="password" can sometimes be annoying for CVC
+              inputMode="numeric"
+              autoComplete="cc-csc"
+              required
+              value={cvc}
+              onChange={handleCvcChange}
+              placeholder="CVC"
+              className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
+            />
+            {formErrors.cvc && (
+              <p className="text-sm text-red-600 mt-1 ">{formErrors.cvc.length > 15 ? formErrors.cvc.slice(0, 45) + '...' : formErrors.cvc}</p>
+            )}
           </div>
 
-          {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          )}
-          {successMessage && (
-            <p className="text-sm text-green-600 text-center">{successMessage}</p>
-          )}
 
           <div className="pt-2">
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className=" cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Processing...' : 'Pay Now'}
+              {isLoading ? <Spinner /> : 'Sign Up'}
             </button>
           </div>
         </form>
@@ -220,12 +249,10 @@ export default function PaymentPage() {
           {/* Add logos of accepted cards here if desired */}
         </div>
 
-         {/* Optional link to go back or to terms */}
-         <p className="mt-8 text-center text-sm text-gray-600">
-          <Link href="/" legacyBehavior>
-            <a className="font-medium text-indigo-600 hover:text-indigo-500">
-              Cancel and return to site
-            </a>
+        {/* Optional link to go back or to terms */}
+        <p className="mt-8 text-center text-sm text-gray-600">
+          <Link href="/signin" className="hover:underline font-medium text-indigo-600 hover:text-indigo-500" >
+            Cancel and return to signup
           </Link>
         </p>
 

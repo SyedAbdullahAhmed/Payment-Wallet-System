@@ -105,8 +105,8 @@ export default function SignUpPage() {
               placeholder="Full Name"
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
-            {formErrors.name && (
-              <p className="text-sm text-red-600 ">{formErrors.name}</p>
+             {formErrors.name && (
+              <p className="text-sm text-red-600 mt-1">{formErrors.name}</p>
             )}
           </div>
 
@@ -130,7 +130,7 @@ export default function SignUpPage() {
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
             {formErrors.email && (
-              <p className="text-sm text-red-600">{formErrors.email}</p>
+              <p className="text-sm text-red-600 mt-1">{formErrors.email}</p>
             )}
           </div>
 
@@ -159,7 +159,7 @@ export default function SignUpPage() {
               {show ? <EyeOff size={18} color='black' /> : <Eye size={18} color='black' />}
             </div>
             {formErrors.password && (
-              <p className="text-sm text-red-600 ">{formErrors.password.length > 15 ? formErrors.password.slice(0, 45) + '...' : formErrors.password}</p>
+              <p className="text-sm text-red-600 mt-1 ">{formErrors.password.length > 15 ? formErrors.password.slice(0, 45) + '...' : formErrors.password}</p>
             )}
           </div>
 
