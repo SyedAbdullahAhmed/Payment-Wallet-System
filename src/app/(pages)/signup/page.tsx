@@ -5,10 +5,9 @@ import Link from 'next/link'; // For the "Log In" link
 import { Eye, EyeOff } from "lucide-react";
 import Spinner from '@/app/components/Spinner';
 import { z } from 'zod';
+import wait from '@/app/utils/wait';
 
-function wait(ms: any) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 
 export default function SignUpPage() {
   const [name, setName] = useState('');
@@ -106,11 +105,11 @@ export default function SignUpPage() {
               placeholder="Full Name"
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
+            {formErrors.name && (
+              <p className="text-sm text-red-600 ">{formErrors.name}</p>
+            )}
           </div>
 
-          {formErrors.name && (
-            <p className="text-sm text-red-600 ">{formErrors.name}</p>
-          )}
 
           <div>
             <label
@@ -130,10 +129,10 @@ export default function SignUpPage() {
               placeholder="Email address"
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full  shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
             />
+            {formErrors.email && (
+              <p className="text-sm text-red-600">{formErrors.email}</p>
+            )}
           </div>
-          {formErrors.email && (
-            <p className="text-sm text-red-600">{formErrors.email}</p>
-          )}
 
           <div className="relative">
             <label
@@ -159,11 +158,11 @@ export default function SignUpPage() {
             >
               {show ? <EyeOff size={18} color='black' /> : <Eye size={18} color='black' />}
             </div>
+            {formErrors.password && (
+              <p className="text-sm text-red-600 ">{formErrors.password.length > 15 ? formErrors.password.slice(0, 45) + '...' : formErrors.password}</p>
+            )}
           </div>
 
-          {formErrors.password && (
-            <p className="text-sm text-red-600 ">{formErrors.password}</p>
-          )}
 
           <div>
             <button

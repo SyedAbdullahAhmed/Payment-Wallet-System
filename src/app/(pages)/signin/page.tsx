@@ -3,6 +3,26 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff } from "lucide-react";
+import { z } from "zod";
+import Spinner from '@/app/components/Spinner';
+import wait from '@/app/utils/wait';
+
+const loginSchema = z.object({
+    email: z
+        .string()
+        .min(1, "Email is required")
+        .email("Please enter a valid email address"),
+
+    password: z
+        .string()
+        .min(6, "Password must be at least 6 characters long")
+        .max(20, "Password cannot exceed 20 characters")
+        .regex(/[a-z]/, "Password must include at least one lowercase letter")
+        .regex(/[A-Z]/, "Password must include at least one uppercase letter")
+        .regex(/\d/, "Password must include at least one number")
+        .regex(/[@$!%*?&#]/, "Password must include at least one special character"),
+});
+
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -10,50 +30,41 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
+        setFieldErrors({}); // clear previous errors
 
-        // Basic client-side validation
-        if (!email.trim() || !password.trim()) {
-            setError('Both email and password are required.');
+        const result = loginSchema.safeParse({ email, password });
+
+        if (!result.success) {
+            const errors = result.error.flatten().fieldErrors;
+            setFieldErrors({
+                email: errors.email?.[0],
+                password: errors.password?.[0],
+            });
             setIsLoading(false);
             return;
         }
 
         // Simulate API call
-        console.log('Logging in with:', { email, password });
         try {
-            // Replace with your actual API call:
-            // const response = await fetch('/api/login', {
-            //   method: 'POST',
-            //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify({ email, password }),
-            // });
-            // if (!response.ok) {
-            //   const errorData = await response.json();
-            //   throw new Error(errorData.message || 'Login failed');
-            // }
-            // const data = await response.json();
-            // console.log('Login successful:', data);
-            // Redirect user or store session/token
-
-            // Simulate success after 1.5 seconds
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            setIsLoading(true);
+            await wait(3000);
+            // await new Promise(resolve => setTimeout(resolve, 1500));
             alert('Login successful (simulated)! Check console for data.');
-            // Reset form or redirect
-            // setEmail('');
-            // setPassword('');
-
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.message || 'Invalid email or password.'); // Generic error for login
+            setError(err.message || 'Invalid email or password.');
         } finally {
             setIsLoading(false);
         }
     };
+
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -81,6 +92,9 @@ export default function LoginPage() {
                             placeholder="Email address"
                             className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-full shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
                         />
+                        {fieldErrors.email && (
+                            <p className="text-sm text-red-600 mt-1">{fieldErrors.email}</p>
+                        )}
                     </div>
 
                     <div>
@@ -106,32 +120,31 @@ export default function LoginPage() {
                                 className="absolute inset-y-0 right-4 flex items-center cursor-pointer"
                                 onClick={() => setShow(!show)}
                             >
-                                {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {show ? <EyeOff size={18} color='black' /> : <Eye size={18} color='black' />}
                             </div>
                         </div>
+                        {fieldErrors.password && (
+                            <p className="text-sm text-red-600 ">{fieldErrors.password.length > 15 ? fieldErrors.password.slice(0, 45) + '...' : fieldErrors.password}</p>
+                        )}
+
                     </div>
 
-                    {error && (
-                        <p className="text-sm text-red-600">{error}</p>
-                    )}
 
                     <div>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className=" cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? 'Logging In...' : 'Log In'}
+                            {isLoading ? <Spinner /> : 'Sign Up'}
                         </button>
                     </div>
                 </form>
 
                 <p className="mt-8 text-center text-sm text-gray-600">
                     Don't have an account?{' '}
-                    <Link href="/signup" legacyBehavior>
-                        <a className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Sign Up
-                        </a>
+                    <Link href="/signup" className="hover:underline font-medium text-indigo-600 hover:text-indigo-500" >
+                        Sign In
                     </Link>
                 </p>
             </div>
