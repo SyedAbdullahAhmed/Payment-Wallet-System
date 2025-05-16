@@ -1,7 +1,7 @@
 // components/Sidebar.js
 "use client"
 import React, { useState } from 'react';
-
+import Cookies from 'js-cookie';
 import {
   FiHome,
   FiBookOpen,
@@ -13,10 +13,12 @@ import {
   FiX,
 } from 'react-icons/fi';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 
 const Sidebar = ({ setSideBarOpen }: any) => {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar open by default
 
   const toggleSidebar = () => {
@@ -119,7 +121,9 @@ const Sidebar = ({ setSideBarOpen }: any) => {
             </li>
 
             {/* Logout Button (at the bottom) */}
-            <li className="mt-auto pb-4">
+            <li className="mt-auto pb-4" onClick={() => {
+              Cookies.remove('token'); router.push("/signin");
+            }} >
               <Link href="#"
                 className={`
                     group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6

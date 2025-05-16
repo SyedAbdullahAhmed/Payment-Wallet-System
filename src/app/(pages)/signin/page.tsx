@@ -6,6 +6,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import Spinner from '@/app/components/Spinner';
 import wait from '@/app/utils/wait';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { BASE_URL } from "@/contants";
 
 const loginSchema = z.object({
     email: z
@@ -32,8 +36,10 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
 
+    const router = useRouter();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (event:any) => {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
@@ -54,12 +60,25 @@ export default function LoginPage() {
         // Simulate API call
         try {
             setIsLoading(true);
-            await wait(3000);
-            // await new Promise(resolve => setTimeout(resolve, 1500));
-            alert('Login successful (simulated)! Check console for data.');
+            const data = {
+                email,
+                password
+            }
+            setIsLoading(true);
+            const res = await axios.post(`${BASE_URL}/api/user/signin`, data, {
+                withCredentials: true
+            });
+            console.log(res.data.message)
+            await wait(2000);
+            toast.success(res.data.message);
+            setEmail('');
+            setPassword('');
+
+            router.push('/paymentform')
         } catch (err: any) {
-            console.error('Login error:', err);
-            setError(err.message || 'Invalid email or password.');
+            console.error('Verification error:', err.response.data.message);
+            toast.error(err.response.data.message || err.messsage)
+            setError(err.message || 'An unexpected error occurred.');
         } finally {
             setIsLoading(false);
         }
@@ -73,7 +92,7 @@ export default function LoginPage() {
                     Log In to Your Account
                 </h1>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-6">
                     <div>
                         <label
                             htmlFor="email"
@@ -132,19 +151,20 @@ export default function LoginPage() {
 
                     <div>
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={handleSubmit}
                             disabled={isLoading}
                             className=" cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? <Spinner /> : 'Sign Up'}
+                            {isLoading ? <Spinner /> : 'Sign In'}
                         </button>
                     </div>
-                </form>
+                </div>
 
                 <p className="mt-8 text-center text-sm text-gray-600">
                     Don't have an account?{' '}
                     <Link href="/signup" className="hover:underline font-medium text-indigo-600 hover:text-indigo-500" >
-                        Sign In
+                        Sign Up
                     </Link>
                 </p>
             </div>

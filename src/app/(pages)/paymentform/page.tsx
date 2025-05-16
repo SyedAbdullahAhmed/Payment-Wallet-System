@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; // Optional, for navigation
 import Spinner from '@/app/components/Spinner';
 import { z } from 'zod';
 import wait from '@/app/utils/wait';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { BASE_URL } from "@/contants"
+import Cookies from 'js-cookie';
 
 export default function PaymentPage() {
   const [cardholderName, setCardholderName] = useState('');
@@ -15,6 +20,13 @@ export default function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ cardholderName?: string; cardNumber?: string; expiryDate?: string; cvc?: string; }>({});
+  const router = useRouter();
+
+  useEffect(() => {
+   
+    // console.log(Cookies.get());
+    // console.log(Cookies.get('token'));
+  }, []);
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
@@ -47,7 +59,7 @@ export default function PaymentPage() {
     setCvc(value);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
@@ -95,22 +107,41 @@ export default function PaymentPage() {
       return;
     }
 
-
-
+    const data = {
+      cardholderName,
+      cardNumber,
+      expiryDate,
+      cvc,
+    };
 
     try {
-      // Simulate API call to your backend (with a token, not raw details)
       setIsLoading(true);
-      await wait(3000);
-      setSuccessMessage('Payment successful! (Simulated)');
-      // Optionally reset form
-      // setCardholderName('');
-      // setCardNumber('');
-      // setExpiryDate('');
-      // setCvc('');
+       const token = Cookies.get('token')
+
+      // add new card
+      const res = await axios.post(
+        `${BASE_URL}/api/card/card-details`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      Cookies.remove('token')
+      Cookies.set('token', res.data.data.token);
+      await wait(2000);
+      toast.success(res.data.message);
+      setCardholderName('');
+      setCardNumber('');
+      setExpiryDate('');
+      setCvc('');
+      router.push('/dashboard')
     } catch (err: any) {
-      console.error('Payment error:', err);
-      setError(err.message || 'Payment failed. Please try again.');
+      console.error('Payment form error:', err);
+      // toast.error(err.response.data.message || err.messsage)
+      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +162,7 @@ export default function PaymentPage() {
           In a real app, the payment gateway's secure input fields (e.g., Stripe Elements) would appear here.
         </div> */}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-6">
           <div>
             <label
               htmlFor="cardholderName"
@@ -230,14 +261,15 @@ export default function PaymentPage() {
 
           <div className="pt-2">
             <button
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               disabled={isLoading}
               className=" cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? <Spinner /> : 'Sign Up'}
+              {isLoading ? <Spinner /> : 'Submit'}
             </button>
           </div>
-        </form>
+        </div>
 
         <div className="mt-6 text-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block mr-1 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
@@ -248,13 +280,6 @@ export default function PaymentPage() {
           </span>
           {/* Add logos of accepted cards here if desired */}
         </div>
-
-        {/* Optional link to go back or to terms */}
-        <p className="mt-8 text-center text-sm text-gray-600">
-          <Link href="/signin" className="hover:underline font-medium text-indigo-600 hover:text-indigo-500" >
-            Cancel and return to signup
-          </Link>
-        </p>
 
       </div>
     </div>
