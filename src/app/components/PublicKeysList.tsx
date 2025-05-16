@@ -1,6 +1,9 @@
 'use client'; // This component uses client-side interactivity (useState, navigator.clipboard)
 
 import React, { useState } from 'react';
+import Navbar from '@/app/components/Navbar';
+import { addToast } from "@heroui/react";
+
 
 // A simple copy icon (Heroicons - ClipboardIcon)
 const ClipboardIcon = ({ className }: { className?: string }) => (
@@ -55,13 +58,20 @@ const publicKeyData: KeyData[] = [
   { id: '10', name: 'Jackie Chan', publicKey: '0x2D3e4F5a6B7c8D9e0F1a2B3c4D5e6F7g8H9i0J1k' },
 ];
 
-export default function PublicKeysList({sideBarOpen}: any) {
+export default function PublicKeysList({ sideBarOpen }: any) {
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
+
+  // Modal states
 
   const handleCopy = async (textToCopy: string, id: string) => {
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopiedKeyId(id);
+      addToast({
+        title: "Data Copied",
+        description: "Successfully copied the data",
+        color: "success",
+      });
       setTimeout(() => {
         setCopiedKeyId(null);
       }, 2000); // Reset icon after 2 seconds
@@ -72,53 +82,56 @@ export default function PublicKeysList({sideBarOpen}: any) {
   };
 
   return (
-    <div className={`bg-white shadow-md rounded-lg p-4 sm:p-6 ${sideBarOpen ? "w-[80vw]" : "w-[93vw]"}  mt-2`}>
-      <h2 className="text-4xl font-semibold text-slate-800 mb-8">
-        User Public Keys
-      </h2>
-      <div className="overflow-x-auto">
-        {/* Header */}
-        <div className="hidden sm:flex items-center py-2 px-3 bg-gray-50 rounded-t-md border-b border-gray-200">
-          <div className="w-2/5 font-medium text-lg text-slate-600">Name</div>
-          <div className="w-3/5 font-medium text-lg text-slate-600">Public Key</div>
-          <div className="w-10 flex-shrink-0"></div> {/* Spacer for copy icon column */}
-        </div>
-
-        {/* Data Rows */}
-        {publicKeyData.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-col sm:flex-row items-start sm:items-center py-3 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
-          >
-            <div className="w-full sm:w-2/5 mb-1 sm:mb-0">
-              <span className="sm:hidden font-semibold text-xs text-slate-500 mr-2">Name:</span>
-              <span className="text-slate-800 text-md font-medium">{item.name}</span>
-            </div>
-            <div className="w-full sm:w-3/5 mb-2 sm:mb-0 sm:pr-2">
-              <span className="sm:hidden font-semibold text-xs text-slate-500 mr-2">Key:</span>
-              <span className="font-mono text-md text-gray-600 break-all">
-                {item.publicKey}
-              </span>
-            </div>
-            <div className="w-full sm:w-10 flex-shrink-0 flex sm:justify-end">
-              <button
-                onClick={() => handleCopy(item.publicKey, item.id)}
-                title="Copy public key"
-                className="p-1.5 rounded-md text-gray-500 hover:text-green-600 hover:bg-indigo-100 focus:outline-none  transition-colors duration-150"
-              >
-                {copiedKeyId === item.id ? (
-                  <CheckIcon className=" cursor-pointer w-5 h-5 text-green-500" />
-                ) : (
-                  <ClipboardIcon className=" cursor-pointer w-5 h-5" />
-                )}
-              </button>
-            </div>
+    <div className="flex flex-col" >
+      <Navbar />
+      <div className={`bg-white shadow-md rounded-lg p-4 sm:p-6 ${sideBarOpen ? "w-[80vw]" : "w-[95vw]"}  mt-2 `}>
+        <h2 className="text-4xl font-semibold text-slate-800 mb-8">
+          User Public Keys
+        </h2>
+        <div className="overflow-x-auto">
+          {/* Header */}
+          <div className="hidden sm:flex items-center py-2 px-3 bg-gray-50 rounded-t-md border-b border-gray-200">
+            <div className="w-2/5 font-medium text-lg text-slate-600">Name</div>
+            <div className="w-3/5 font-medium text-lg text-slate-600">Public Key</div>
+            <div className="w-10 flex-shrink-0"></div> {/* Spacer for copy icon column */}
           </div>
-        ))}
+
+          {/* Data Rows */}
+          {publicKeyData.map((item) => (
+            <div
+              key={item.id}
+              className="flex flex-col sm:flex-row items-start sm:items-center py-3 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
+            >
+              <div className="w-full sm:w-2/5 mb-1 sm:mb-0">
+                <span className="sm:hidden font-semibold text-xs text-slate-500 mr-2">Name:</span>
+                <span className="text-slate-800 text-md font-medium">{item.name}</span>
+              </div>
+              <div className="w-full sm:w-3/5 mb-2 sm:mb-0 sm:pr-2">
+                <span className="sm:hidden font-semibold text-xs text-slate-500 mr-2">Key:</span>
+                <span className="font-mono text-md text-gray-600 break-all">
+                  {item.publicKey}
+                </span>
+              </div>
+              <div className="w-full sm:w-10 flex-shrink-0 flex sm:justify-end">
+                <button
+                  onClick={() => handleCopy(item.publicKey, item.id)}
+                  title="Copy public key"
+                  className="p-1.5 rounded-md text-gray-500 hover:text-green-600 hover:bg-indigo-100 focus:outline-none  transition-colors duration-150"
+                >
+                  {copiedKeyId === item.id ? (
+                    <CheckIcon className=" cursor-pointer w-5 h-5 text-green-500" />
+                  ) : (
+                    <ClipboardIcon className=" cursor-pointer w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {publicKeyData.length === 0 && (
+          <p className="text-center text-gray-500 py-4">No public keys found.</p>
+        )}
       </div>
-      {publicKeyData.length === 0 && (
-         <p className="text-center text-gray-500 py-4">No public keys found.</p>
-      )}
     </div>
   );
 }

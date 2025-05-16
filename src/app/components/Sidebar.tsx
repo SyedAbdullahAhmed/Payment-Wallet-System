@@ -3,20 +3,21 @@
 import React, { useState } from 'react';
 
 import {
-    FiHome,
-    FiBookOpen,       
-    FiVideo,          
-    FiMessageCircle,  
-    FiSettings,       
-    FiLogOut,         
-    FiMenu,           
-    FiX,              
-  } from 'react-icons/fi';
-  
+  FiHome,
+  FiBookOpen,
+  FiVideo,
+  FiMessageCircle,
+  FiSettings,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from 'react-icons/fi';
+import Link from 'next/link';
 
 
-const Sidebar = ({setSideBarOpen}: any) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar open by default
+
+const Sidebar = ({ setSideBarOpen }: any) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar open by default
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -24,11 +25,10 @@ const Sidebar = ({setSideBarOpen}: any) => {
   };
 
   const navItems = [
-    { name: 'Home', href: '#', icon: FiHome, current: true }, // Added 'current' state example
-    { name: 'Posts', href: '#', icon: FiBookOpen, current: false },
-    { name: 'Videos', href: '#', icon: FiVideo, current: false },
-    { name: 'Comments', href: '#', icon: FiMessageCircle, current: false },
-    { name: 'Settings', href: '#', icon: FiSettings, current: false },
+    { name: 'Dashboard', href: '/dashboard', icon: FiHome, current: true }, // Added 'current' state example
+    { name: 'Send Payment', href: '/sendpayment', icon: FiMessageCircle, current: false },
+    { name: 'Public Keys', href: '/keys', icon: FiBookOpen, current: false },
+    { name: 'Notifications', href: '/notifications', icon: FiVideo, current: false },
   ];
 
   return (
@@ -54,11 +54,11 @@ const Sidebar = ({setSideBarOpen}: any) => {
       >
         {/* Sidebar Header / Logo Area */}
         <div className={`flex items-center px-4 h-16 shrink-0 ${isSidebarOpen ? 'justify-between' : 'justify-center'} lg:justify-start`}>
-           {/* Optional Logo/Title */}
-           <span className={`font-bold text-xl text-white ${isSidebarOpen ? 'inline' : 'hidden'} `}>MyApp</span>
+          {/* Optional Logo/Title */}
+          <span className={`font-bold text-xl text-white ${isSidebarOpen ? 'inline' : 'hidden'} `}>MyApp</span>
 
           {/* Mobile Close Button (appears top right of sidebar) */}
-           {/* <button
+          {/* <button
             onClick={toggleSidebar}
             className={`text-slate-200 hover:text-white lg:hidden ${isSidebarOpen ? 'block' : 'hidden'}`}
            >
@@ -66,8 +66,8 @@ const Sidebar = ({setSideBarOpen}: any) => {
              <FiX className="h-6 w-6" aria-hidden="true" />
            </button> */}
 
-           {/* Desktop Collapse Button (appears top right when expanded) */}
-           {/* <button
+          {/* Desktop Collapse Button (appears top right when expanded) */}
+          {/* <button
             onClick={toggleSidebar}
             className={`hidden lg:block ml-auto text-slate-200 hover:text-white ${isSidebarOpen ? 'block' : 'hidden'}`}
            >
@@ -75,14 +75,14 @@ const Sidebar = ({setSideBarOpen}: any) => {
              <FiX className="h-6 w-6" aria-hidden="true" />
            </button> */}
 
-           {/* Desktop Expand Button (appears when collapsed) */}
-            <button
-              onClick={toggleSidebar}
-              className={` cursor-pointer hidden lg:block text-slate-200 hover:text-white ${!isSidebarOpen ? 'block' : 'hidden ml-30'}`} // Show only when collapsed on desktop
-            >
-              <span className="sr-only">Expand sidebar</span>
-              <FiMenu className="h-6 w-6" aria-hidden="true" />
-            </button>
+          {/* Desktop Expand Button (appears when collapsed) */}
+          <button
+            onClick={toggleSidebar}
+            className={` cursor-pointer hidden lg:block text-slate-200 hover:text-white ${!isSidebarOpen ? 'block' : 'hidden ml-30'}`} // Show only when collapsed on desktop
+          >
+            <span className="sr-only">Expand sidebar</span>
+            <FiMenu className="h-6 w-6" aria-hidden="true" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -93,27 +93,26 @@ const Sidebar = ({setSideBarOpen}: any) => {
               <ul role="list" className="-mx-2 space-y-1">
                 {navItems.map((item) => (
                   <li key={item.name}>
-                    <a
-                      href={item.href}
+
+                    <Link href={item.href}
                       className={`
                         group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold
-                        ${
-                          item.current
-                            ? 'bg-slate-700 text-white' // Active state
-                            : 'text-slate-200 hover:text-white hover:bg-slate-700/50' // Inactive state
+                        ${item.current
+                          ? 'bg-slate-700 text-white' // Active state
+                          : 'text-slate-200 hover:text-white hover:bg-slate-700/50' // Inactive state
                         }
                         justify-start
-                      `}
-                    >
+                      `} >
                       <item.icon
-                        className={`h-6 w-6 shrink-0 ${
-                          item.current ? 'text-white' : 'text-slate-300 group-hover:text-white'
-                        }`}
+                        className={`h-6 w-6 shrink-0 ${item.current ? 'text-white' : 'text-slate-300 group-hover:text-white'
+                          }`}
                         aria-hidden="true"
                       />
                       {/* Hide text when collapsed (on all sizes for simplicity here, but can use lg:inline etc.) */}
                       <span className={`${isSidebarOpen ? 'inline' : 'hidden'}`}>{item.name}</span>
-                    </a>
+                    </Link>
+
+
                   </li>
                 ))}
               </ul>
@@ -121,17 +120,15 @@ const Sidebar = ({setSideBarOpen}: any) => {
 
             {/* Logout Button (at the bottom) */}
             <li className="mt-auto pb-4">
-               <a
-                  href="#"
-                   className={`
+              <Link href="#"
+                className={`
                     group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6
                     text-slate-200 hover:bg-slate-700/50 hover:text-white
                      justify-start
-                  `}
-                >
-                  <FiLogOut className="h-6 w-6 shrink-0 text-slate-300 group-hover:text-white" aria-hidden="true" />
-                  <span className={`${isSidebarOpen ? 'inline' : 'hidden'} `}>Logout</span>
-                </a>
+                  `}>
+                <FiLogOut className="h-6 w-6 shrink-0 text-slate-300 group-hover:text-white" aria-hidden="true" />
+                <span className={`${isSidebarOpen ? 'inline' : 'hidden'} `}>Logout</span>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -139,7 +136,7 @@ const Sidebar = ({setSideBarOpen}: any) => {
 
       {/* Main Content Area */}
       <div
-         className={`
+        className={`
            transition-all duration-300 ease-in-out
            lg:pl-64  // Default padding left for desktop open sidebar
            ${isSidebarOpen ? 'lg:pl-64' : 'lg:pl-20'} // Adjust padding left based on desktop state

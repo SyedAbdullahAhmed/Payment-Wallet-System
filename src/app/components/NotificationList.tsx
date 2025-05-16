@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { EyeIcon } from './EyeIcon';
 import { TrashIcon } from './TrashIcon';
 import NotificationModal from './Notification';
+import Navbar from '@/app/components/Navbar';
 
 export interface Notification {
   id: string;
@@ -50,7 +51,9 @@ const NotificationsList = ({sideBarOpen}: any) => {
   }
 
   return (
-    <div className= {`${sideBarOpen ? "w-[80vw]" : "w-[93vw]" } p-4 pt-10`}>
+    <div className="flex flex-col" >
+          <Navbar />
+    <div className= {`${sideBarOpen ? "w-[80vw]" : "w-[95vw]" } p-4 pt-10`}>
       <h2 className="text-4xl font-semibold text-slate-800 mb-6">Notifications</h2>
       {notifications.length === 0 ? (
         <p className="text-center text-gray-500">No new notifications.</p>
@@ -105,6 +108,7 @@ const NotificationsList = ({sideBarOpen}: any) => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+    </div>
     </div>
   );
 };

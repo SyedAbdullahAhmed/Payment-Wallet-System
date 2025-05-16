@@ -7,7 +7,7 @@ import { useState } from 'react'
 type Props = {}
 
 const Notification = (props: Props) => {
-  const [sideBarOpen, setSideBarOpen] = useState(true);
+  const [sideBarOpen, setSideBarOpen] = useState(false);
   return (
     <>  
         <Sidebar  setSideBarOpen={setSideBarOpen} />
