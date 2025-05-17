@@ -4,9 +4,8 @@ import Sidebar from '@/app/components/Sidebar'
 import PublicKeysList from '@/app/components/PublicKeysList'
 import { useState } from 'react'
 
-type Props = {}
 
-const Keys = (props: Props) => {
+const Keys = () => {
   const [sideBarOpen, setSideBarOpen] = useState(false);
   return (
     <>  

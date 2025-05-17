@@ -1,6 +1,6 @@
 // components/Sidebar.js
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import Cookies from 'js-cookie';
 import {
   FiLogOut,

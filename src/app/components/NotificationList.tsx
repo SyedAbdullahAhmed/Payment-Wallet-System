@@ -2,12 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { EyeIcon } from './EyeIcon';
-import { TrashIcon } from './TrashIcon';
 import NotificationModal from './Notification';
 import Navbar from '@/app/components/Navbar';
-import wait from '@/app/utils/wait';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { BASE_URL } from "@/contants"

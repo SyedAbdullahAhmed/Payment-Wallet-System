@@ -43,7 +43,6 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerification, setIsVerification] = useState(false);
   const [code, setCode] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; password?: string }>({});
@@ -52,7 +51,7 @@ export default function SignUpPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setError(null);
+
     setFormErrors({}); // Reset individual field errors
 
 
@@ -87,7 +86,6 @@ export default function SignUpPage() {
     } catch (err: any) {
       console.error('Signup error:', err);
       toast.error(err.response.data.message || err.messsage)
-      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +103,6 @@ export default function SignUpPage() {
     } catch (err: any) {
       console.error('Verification error:', err);
       toast.error(err.response.data.message || err.messsage)
-      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }

@@ -4,9 +4,9 @@ import NotificationList from '@/app/components/NotificationList'
 import Sidebar from '@/app/components/Sidebar'
 import { useState } from 'react'
 
-type Props = {}
 
-const Notification = (props: Props) => {
+
+const Notification = () => {
   const [sideBarOpen, setSideBarOpen] = useState(false);
   return (
     <>  

@@ -4,9 +4,8 @@ import Sidebar from '@/app/components/Sidebar'
 import Dashboard from '@/app/components/Dashboard';
 import { useState } from 'react'
 
-type Props = {}
 
-const DashboardPage = (props: Props) => {
+const DashboardPage = () => {
     const [sideBarOpen, setSideBarOpen] = useState(false);
     return (
         <>  

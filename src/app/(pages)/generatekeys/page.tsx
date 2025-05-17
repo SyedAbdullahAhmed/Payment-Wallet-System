@@ -4,9 +4,9 @@ import Sidebar from '@/app/components/Sidebar'
 import GenerateKeys from '@/app/components/GenerateKeys';
 import { useState } from 'react'
 
-type Props = {}
 
-const GenerateKeysPage = (props: Props) => {
+
+const GenerateKeysPage = () => {
     const [sideBarOpen, setSideBarOpen] = useState(false);
     return (
         <>  

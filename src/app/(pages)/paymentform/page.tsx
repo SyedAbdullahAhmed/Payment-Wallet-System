@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link'; // Optional, for navigation
 import Spinner from '@/app/components/Spinner';
 import { z } from 'zod';
 import wait from '@/app/utils/wait';
@@ -17,8 +16,6 @@ export default function PaymentPage() {
   const [expiryDate, setExpiryDate] = useState(''); // MM/YY format
   const [cvc, setCvc] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{ cardholderName?: string; cardNumber?: string; expiryDate?: string; cvc?: string; }>({});
   const router = useRouter();
 
@@ -62,9 +59,7 @@ export default function PaymentPage() {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsLoading(true);
-    setError(null);
-
-    setError(null);
+ 
     setFormErrors({}); // Reset individual field errors
 
 
@@ -141,7 +136,6 @@ export default function PaymentPage() {
     } catch (err: any) {
       console.error('Payment form error:', err);
       // toast.error(err.response.data.message || err.messsage)
-      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatCurrency, formatDate } from '@/app/utils/currencyFormatter'; // Adjust path
 
 // Import Chart.js components and registration

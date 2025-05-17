@@ -34,6 +34,13 @@ export default function KeyGenerator({ sideBarOpen }: any) {
 
   const shouldHaveCompactLayout = !!publicKey;
 
+
+  const sidebarWidth = sideBarOpen ? "w-[60vw]" : "w-[60vw]";
+  const layoutClasses = shouldHaveCompactLayout
+    ? "mt-2 h-auto px-4"
+    : "mt-16 h-auto min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))]";
+
+
   useEffect(() => {
     const fetchCurrentUserKeys = async () => {
       setInitialFetchInProgress(true);
@@ -178,7 +185,12 @@ export default function KeyGenerator({ sideBarOpen }: any) {
   }
 
   return (
-    <div className={`${sideBarOpen ? "w-[60vw]" : "w-[60vw]"} ${shouldHaveCompactLayout ? "mt-2 h-auto px-4" : "mt-16 h-auto min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))]" }  mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg space-y-6 flex flex-col`}>
+    <div className={`
+    ${sidebarWidth} 
+    ${layoutClasses} 
+    mx-auto p-4 sm:p-6 bg-white shadow-lg 
+    rounded-lg space-y-6 flex flex-col
+  `}>
       <h2 className="text-3xl font-semibold text-slate-800 text-center mb-6">
         Cryptographic Key Management {/* Changed title slightly */}
       </h2>
@@ -191,9 +203,9 @@ export default function KeyGenerator({ sideBarOpen }: any) {
         {isGeneratingLoading ? <Spinner /> : 'Generate Keys'} {/* MODIFIED: Simplified text */}
       </button>
       {!!publicKey && (
-         <p className="text-center text-sm text-gray-500 -mt-4">
-            You already have keys. To generate new ones, existing keys must be removed first (feature not available here).
-         </p>
+        <p className="text-center text-sm text-gray-500 -mt-4">
+          You already have keys. To generate new ones, existing keys must be removed first (feature not available here).
+        </p>
       )}
 
 
@@ -204,7 +216,7 @@ export default function KeyGenerator({ sideBarOpen }: any) {
         </div>
       )}
 
-      { (publicKey || !initialFetchInProgress) && (
+      {(publicKey || !initialFetchInProgress) && (
         <div className="space-y-2 p-4 border border-gray-200 rounded-md bg-gray-50">
           <label htmlFor="publicKey" className="block text-lg font-medium text-slate-700">
             Public Key
@@ -289,13 +301,13 @@ export default function KeyGenerator({ sideBarOpen }: any) {
       )}
 
       {!publicKey && !initialFetchInProgress && (
-          <div className="text-center text-gray-500 py-4 flex-grow flex flex-col justify-center items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-16 h-16 text-gray-400 mb-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-              </svg>
-              <p className="text-lg">No cryptographic keys found for your account.</p>
-              <p className="text-sm">Click the "Generate Keys" button above to create a new pair.</p>
-          </div>
+        <div className="text-center text-gray-500 py-4 flex-grow flex flex-col justify-center items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-16 h-16 text-gray-400 mb-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+          </svg>
+          <p className="text-lg">No cryptographic keys found for your account.</p>
+          <p className="text-sm">Click the "Generate Keys" button above to create a new pair.</p>
+        </div>
       )}
     </div>
   );

@@ -46,23 +46,22 @@ interface KeyData {
 }
 
 // 10 Custom Data Entries
-const publicKeyData: KeyData[] = [
-  { id: '1', name: 'Alice Wonderland', publicKey: '0x1A2b3C4d5E6f7A8B9c0D1e2F3a4B5c6D7e8F9a0B' },
-  { id: '2', name: 'Bob The Builder', publicKey: '0x9F8e7D6c5B4a3F2e1D0c9B8a7F6e5D4c3B2a1F0E' },
-  { id: '3', name: 'Charlie Chaplin', publicKey: '0x5E6f7A8b9C0d1E2f3A4b5C6d7E8f9A0b1C2d3E4F' },
-  { id: '4', name: 'Diana Prince', publicKey: '0xD1e2F3a4B5c6D7e8F9a0B1c2D3e4F5a6B7c8D9e0' },
-  { id: '5', name: 'Edward Scissorhands', publicKey: '0x7A8b9C0d1E2f3A4b5C6d7E8f9A0b1C2d3E4f5G6h' },
-  { id: '6', name: 'Fiona Apple', publicKey: '0xB5c6D7e8F9a0B1c2D3e4F5a6B7c8D9e0F1a2B3c4' },
-  { id: '7', name: 'George Orwell', publicKey: '0x3A4b5C6d7E8f9A0b1C2d3E4f5G6h7I8j9K0l1M2n' },
-  { id: '8', name: 'Hermione Granger', publicKey: '0x8F9a0B1c2D3e4F5a6B7c8D9e0F1a2B3c4D5e6F7g' },
-  { id: '9', name: 'Indiana Jones', publicKey: '0x6d7E8f9A0b1C2d3E4f5G6h7I8j9K0l1M2n3O4p5Q' },
-  { id: '10', name: 'Jackie Chan', publicKey: '0x2D3e4F5a6B7c8D9e0F1a2B3c4D5e6F7g8H9i0J1k' },
-];
+// const publicKeyData: KeyData[] = [
+//   { id: '1', name: 'Alice Wonderland', publicKey: '0x1A2b3C4d5E6f7A8B9c0D1e2F3a4B5c6D7e8F9a0B' },
+//   { id: '2', name: 'Bob The Builder', publicKey: '0x9F8e7D6c5B4a3F2e1D0c9B8a7F6e5D4c3B2a1F0E' },
+//   { id: '3', name: 'Charlie Chaplin', publicKey: '0x5E6f7A8b9C0d1E2f3A4b5C6d7E8f9A0b1C2d3E4F' },
+//   { id: '4', name: 'Diana Prince', publicKey: '0xD1e2F3a4B5c6D7e8F9a0B1c2D3e4F5a6B7c8D9e0' },
+//   { id: '5', name: 'Edward Scissorhands', publicKey: '0x7A8b9C0d1E2f3A4b5C6d7E8f9A0b1C2d3E4f5G6h' },
+//   { id: '6', name: 'Fiona Apple', publicKey: '0xB5c6D7e8F9a0B1c2D3e4F5a6B7c8D9e0F1a2B3c4' },
+//   { id: '7', name: 'George Orwell', publicKey: '0x3A4b5C6d7E8f9A0b1C2d3E4f5G6h7I8j9K0l1M2n' },
+//   { id: '8', name: 'Hermione Granger', publicKey: '0x8F9a0B1c2D3e4F5a6B7c8D9e0F1a2B3c4D5e6F7g' },
+//   { id: '9', name: 'Indiana Jones', publicKey: '0x6d7E8f9A0b1C2d3E4f5G6h7I8j9K0l1M2n3O4p5Q' },
+//   { id: '10', name: 'Jackie Chan', publicKey: '0x2D3e4F5a6B7c8D9e0F1a2B3c4D5e6F7g8H9i0J1k' },
+// ];
 
 export default function PublicKeysList({ sideBarOpen }: any) {
 
   const [publicKeyData, setPublicKeyData] = useState([]);
-  const [keys, setKeys] = useState<KeyData[]>([]);
 
   useEffect(() => {
    const fetchKeys = async () => {
