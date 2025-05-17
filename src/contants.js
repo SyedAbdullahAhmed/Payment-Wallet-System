@@ -1,3 +1,3 @@
-const BASE_URL = 'https://payment-wallet-system-backend.vercel.app/' ||'http://localhost:3000'
+const BASE_URL = 'https://payment-wallet-system-backend.vercel.app'
 
 export { BASE_URL }
