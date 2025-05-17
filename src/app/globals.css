@@ -20,7 +20,11 @@
 }
 
 body {
-  background: var(--background);
+  background: white;
   color: var(--foreground);
+  font-family: 'Poppins', sans-serif;
+}
+
+.custom-toast {
   font-family: 'Poppins', sans-serif;
 }

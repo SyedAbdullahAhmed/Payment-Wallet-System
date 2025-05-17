@@ -1,24 +1,28 @@
 // components/Sidebar.js
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import {
-  FiHome,
-  FiBookOpen,
-  FiVideo,
-  FiMessageCircle,
-  FiSettings,
   FiLogOut,
   FiMenu,
-  FiX,
 } from 'react-icons/fi';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { LayoutDashboard } from 'lucide-react';
+import { Key } from 'lucide-react';
+import { ArrowRightLeft } from 'lucide-react'; // for transfer/payments
+import { Bell } from 'lucide-react';
+import { KeyRound } from 'lucide-react';
+
 
 
 
 const Sidebar = ({ setSideBarOpen }: any) => {
   const router = useRouter();
+
+  const pathname = usePathname()
+  console.log(pathname)
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar open by default
 
   const toggleSidebar = () => {
@@ -27,10 +31,11 @@ const Sidebar = ({ setSideBarOpen }: any) => {
   };
 
   const navItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: FiHome, current: true }, // Added 'current' state example
-    { name: 'Send Payment', href: '/sendpayment', icon: FiMessageCircle, current: false },
-    { name: 'Public Keys', href: '/keys', icon: FiBookOpen, current: false },
-    { name: 'Notifications', href: '/notifications', icon: FiVideo, current: false },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, current: pathname === '/dashboard' ? true : false }, // Added 'current' state example
+    { name: 'Send Payment', href: '/sendpayment', icon: Key, current: pathname === '/sendpayment' ? true : false },
+    { name: 'Generate Keys', href: '/generatekeys', icon: KeyRound, current: pathname === '/generatekeys' ? true : false },
+    { name: 'Public Keys', href: '/keys', icon: ArrowRightLeft, current: pathname === '/keys' ? true : false },
+    { name: 'Notifications', href: '/notifications', icon: Bell, current:  pathname === '/notifications' ? true : false },
   ];
 
   return (

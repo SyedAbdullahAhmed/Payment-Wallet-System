@@ -1,6 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import wait from '@/app/utils/wait';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
+import { BASE_URL } from "@/contants";
 
 // Sample hardcoded card details (DISPLAY ONLY)
 const HARDCODED_CARD_DETAILS = {
@@ -11,6 +17,7 @@ const HARDCODED_CARD_DETAILS = {
 
 export default function SendPaymentForm() {
   const [receiverKey, setReceiverKey] = useState('');
+  const [privateKey, setPrivateKey] = useState('');
   const [amount, setAmount] = useState('');
   const [confirmAmount, setConfirmAmount] = useState('');
 
@@ -18,7 +25,9 @@ export default function SendPaymentForm() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
@@ -26,6 +35,11 @@ export default function SendPaymentForm() {
 
     // Basic Validation
     if (!receiverKey.trim()) {
+      setError('Receiver Public Key is required.');
+      setIsLoading(false);
+      return;
+    }
+    if (!privateKey.trim()) {
       setError('Receiver Public Key is required.');
       setIsLoading(false);
       return;
@@ -58,19 +72,32 @@ export default function SendPaymentForm() {
     });
 
     try {
-      // Replace with your actual API call
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate network delay
-
-      setSuccessMessage(
-        `Successfully sent $${numAmount.toFixed(2)} to ${receiverKey.substring(0,10)}...`
+      setIsLoading(true);
+      const data = {
+        receiverPublicKey: receiverKey,
+        amount: numAmount,
+        senderPrivateKey: privateKey
+      }
+      const res = await axios.post(`${BASE_URL}/api/payment/send-payment`, data, 
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`
+          }
+        }
       );
-      // Reset form (optional)
-      // setReceiverKey('');
-      // setAmount('');
-      // setConfirmAmount('');
+      console.log(res.data.message)
+      await wait(2000);
+      toast.success(res.data.message);
+      setAmount('')
+      setConfirmAmount('')
+      setReceiverKey('')
+      setPrivateKey('')
+
+      router.push('/dashboard')
     } catch (err: any) {
-      console.error('Payment submission error:', err);
-      setError(err.message || 'Payment failed. Please try again.');
+      console.error('Payment sending error:', err.response);
+      toast.error(err?.response?.data?.message || err.messsage)
+      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +109,7 @@ export default function SendPaymentForm() {
         Send Payment
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-2">
+      <div className="space-y-2">
         {/* Receiver Public Key */}
         <div>
           <label
@@ -100,6 +127,26 @@ export default function SendPaymentForm() {
             value={receiverKey}
             onChange={(e) => setReceiverKey(e.target.value)}
             placeholder="Enter receiver's public key (e.g., 0xAbC...)"
+            className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="privateKey"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Sender(Your) Private Key
+          </label>
+          <input
+            id="privateKey"
+            name="privateKey"
+            type="text"
+            autoComplete="off"
+            required
+            value={privateKey}
+            onChange={(e) => setPrivateKey(e.target.value)}
+            placeholder="Enter your's private key (e.g., 0xAbC...)"
             className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
           />
         </div>
@@ -205,20 +252,22 @@ export default function SendPaymentForm() {
         <div className="pt-3 flex gap-2">
           <button
             type="submit"
+            onClick={() => router.push('/dashboard')}
             disabled={isLoading}
             className="cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Cancelling Payment...' : 'Cancel Payment'}
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             disabled={isLoading}
             className="cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Processing Payment...' : 'Send Payment'}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
