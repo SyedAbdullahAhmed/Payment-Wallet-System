@@ -21,6 +21,9 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns'; // Adapter for date/time scales
 import Navbar from '@/app/components/Navbar';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { BASE_URL } from "@/contants"
 
 // Register Chart.js components
 ChartJS.register(
@@ -40,24 +43,26 @@ ChartJS.register(
 interface Transaction {
   id: string;
   type: 'sent' | 'received';
-  description: string;
   amount: number;
   date: string; // ISO date string
   runningBalance: number;
+  time: string;
+  senderName: string;
+  receiverName: string;
 }
 
-const initialTransactionsData: Omit<Transaction, 'runningBalance'>[] = [
-  { id: 't0', type: 'received', description: 'Initial Balance Deposit', amount: 500, date: new Date(2023, 9, 25, 9, 0).toISOString() }, // Month is 0-indexed
-  { id: 't1', type: 'received', description: 'From Acme Corp Payroll', amount: 2500, date: new Date(2023, 10, 1, 9, 0).toISOString() },
-  { id: 't2', type: 'sent', description: 'Rent Payment', amount: 1200, date: new Date(2023, 10, 1, 14, 30).toISOString() },
-  { id: 't3', type: 'received', description: 'Freelance Project A', amount: 550, date: new Date(2023, 10, 5, 11, 15).toISOString() },
-  { id: 't4', type: 'sent', description: 'Groceries', amount: 150.75, date: new Date(2023, 10, 6, 17, 0).toISOString() },
-  { id: 't5', type: 'sent', description: 'To Charlie Brown', amount: 75, date: new Date(2023, 10, 10, 10, 0).toISOString() },
-  { id: 't6', type: 'received', description: 'Refund from Online Store', amount: 49.99, date: new Date(2023, 10, 12, 15, 45).toISOString() },
-  { id: 't7', type: 'received', description: 'Stock Dividend', amount: 120, date: new Date(2023, 11, 3, 10, 0).toISOString() },
-  { id: 't8', type: 'sent', description: 'Utilities Bill', amount: 85.50, date: new Date(2023, 11, 5, 12, 0).toISOString() },
-  { id: 't9', type: 'received', description: 'Project B Payment', amount: 750, date: new Date(2023, 11, 15, 16, 0).toISOString() },
-];
+// const initialTransactionsData: Omit<Transaction, 'runningBalance'>[] = [
+//   { id: 't0', type: 'received', description: 'Initial Balance Deposit', amount: 500, date: new Date(2023, 9, 25, 9, 0).toISOString() }, // Month is 0-indexed
+//   { id: 't1', type: 'received', description: 'From Acme Corp Payroll', amount: 2500, date: new Date(2023, 10, 1, 9, 0).toISOString() },
+//   { id: 't2', type: 'sent', description: 'Rent Payment', amount: 1200, date: new Date(2023, 10, 1, 14, 30).toISOString() },
+//   { id: 't3', type: 'received', description: 'Freelance Project A', amount: 550, date: new Date(2023, 10, 5, 11, 15).toISOString() },
+//   { id: 't4', type: 'sent', description: 'Groceries', amount: 150.75, date: new Date(2023, 10, 6, 17, 0).toISOString() },
+//   { id: 't5', type: 'sent', description: 'To Charlie Brown', amount: 75, date: new Date(2023, 10, 10, 10, 0).toISOString() },
+//   { id: 't6', type: 'received', description: 'Refund from Online Store', amount: 49.99, date: new Date(2023, 10, 12, 15, 45).toISOString() },
+//   { id: 't7', type: 'received', description: 'Stock Dividend', amount: 120, date: new Date(2023, 11, 3, 10, 0).toISOString() },
+//   { id: 't8', type: 'sent', description: 'Utilities Bill', amount: 85.50, date: new Date(2023, 11, 5, 12, 0).toISOString() },
+//   { id: 't9', type: 'received', description: 'Project B Payment', amount: 750, date: new Date(2023, 11, 15, 16, 0).toISOString() },
+// ];
 // Note: Initial Balance is now the first transaction for charting simplicity.
 
 export default function Dashboard({ sideBarOpen }: any) {
@@ -70,10 +75,45 @@ export default function Dashboard({ sideBarOpen }: any) {
   const [monthlyReceivedData, setMonthlyReceivedData] = useState<any>(null);
 
   useEffect(() => {
+    const fetchNotfications = async () => {
+      try {
+        const res = await axios.get(
+          `${BASE_URL}/api/notifications/my-notifications`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('token')}`
+            }
+          }
+        );
+        const res2 = await axios.get(
+          `${BASE_URL}/api/user/total-balance`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('token')}`
+            }
+          }
+        );
+
+        console.log(res2.data)
+
+        setTotalBalance(res2.data.data.totalBalance);
+        setTransactions(res.data.data.transactionTransformed);
+      } catch (error) {
+        console.error('Error fetching keys:', error);
+      }
+    }
+
+    fetchNotfications();
+  }, []);
+
+
+
+  useEffect(() => {
     let currentBalance = 0; // Start from zero if first transaction is initial balance
-    const processedTransactions = initialTransactionsData
+    const processedTransactions = transactions
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .map(tx => {
+        console.log("currentBalance")
         if (tx.type === 'received') {
           currentBalance += tx.amount;
         } else {
@@ -82,7 +122,7 @@ export default function Dashboard({ sideBarOpen }: any) {
         return { ...tx, runningBalance: currentBalance };
       });
     setTransactions(processedTransactions);
-    setTotalBalance(currentBalance);
+    // setTotalBalance(currentBalance);
 
     // --- Prepare data for charts ---
     // Balance Trend Chart Data
@@ -91,7 +131,7 @@ export default function Dashboard({ sideBarOpen }: any) {
       datasets: [
         {
           label: 'Balance',
-          data: processedTransactions.map(tx => tx.runningBalance),
+          data: processedTransactions.map(tx => tx.amount),
           borderColor: 'rgb(79, 70, 229)', // indigo-600
           backgroundColor: 'rgba(79, 70, 229, 0.1)',
           tension: 0.1,
@@ -301,30 +341,19 @@ export default function Dashboard({ sideBarOpen }: any) {
                 <thead className="text-xs text-slate-500 uppercase bg-slate-50">
                   <tr>
                     <th scope="col" className="px-4 py-3">Date</th>
-                    <th scope="col" className="px-4 py-3">Description</th>
                     <th scope="col" className="px-4 py-3 text-right">Amount</th>
-                    <th scope="col" className="px-4 py-3 text-right">Running Balance</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions.length > 0 ? (
-                    transactions.map((tx, index) => (
-                      <tr key={tx.id} className={`border-b border-slate-100 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
+                    transactions.map((tx: any, index) => (
+                      <tr key={index} className={`border-b border-slate-100 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
                         <td className="px-4 py-3 whitespace-nowrap">
                           {formatDate(tx.date, { month: 'short', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit' })}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`font-medium ${tx.type === 'sent' ? 'text-red-600' : 'text-green-600'}`}>
-                            {tx.type === 'sent' ? 'Sent: ' : 'Received: '}
-                          </span>
-                          {tx.description}
                         </td>
                         <td className={`px-4 py-3 text-right font-medium whitespace-nowrap ${tx.type === 'sent' ? 'text-red-600' : 'text-green-600'}`}>
                           {tx.type === 'sent' ? '-' : '+'}
                           {formatCurrency(tx.amount)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-semibold text-slate-600 whitespace-nowrap">
-                          {formatCurrency(tx.runningBalance)}
                         </td>
                       </tr>
                     ))

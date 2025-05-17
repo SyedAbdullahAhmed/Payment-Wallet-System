@@ -3,12 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/app/components/Navbar';
 import { addToast } from "@heroui/react";
-import wait from '@/app/utils/wait';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { BASE_URL } from "@/contants"
-import Cookies from 'js-cookie';
 
 // A simple copy icon (Heroicons - ClipboardIcon)
 const ClipboardIcon = ({ className }: { className?: string }) => (

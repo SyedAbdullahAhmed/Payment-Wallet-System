@@ -32,8 +32,8 @@ const Sidebar = ({ setSideBarOpen }: any) => {
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, current: pathname === '/dashboard' ? true : false }, // Added 'current' state example
-    { name: 'Send Payment', href: '/sendpayment', icon: Key, current: pathname === '/sendpayment' ? true : false },
-    { name: 'Generate Keys', href: '/generatekeys', icon:  ArrowRightLeft, current: pathname === '/generatekeys' ? true : false },
+    { name: 'Send Payment', href: '/sendpayment', icon: ArrowRightLeft, current: pathname === '/sendpayment' ? true : false },
+    { name: 'Generate Keys', href: '/generatekeys', icon:  Key, current: pathname === '/generatekeys' ? true : false },
     { name: 'Public Keys', href: '/keys', icon: KeyRound, current: pathname === '/keys' ? true : false },
     { name: 'Notifications', href: '/notifications', icon: Bell, current:  pathname === '/notifications' ? true : false },
   ];

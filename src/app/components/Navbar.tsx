@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { User } from 'lucide-react';
@@ -86,8 +87,8 @@ export default function Navbar() {
             } absolute inset-x-0 z-20 w-full px-6 py-4 transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 md:mt-0 md:p-0 md:top-0 md:relative md:bg-transparent md:w-auto md:opacity-100 md:translate-x-0 md:flex md:items-center`}
         >
           <div className="flex flex-col md:flex-row md:mx-6">
-            {[email].map((item) => (
-              <>
+            {[email].map((item, index) => (
+              <React.Fragment  key={index}>
                 <Link
                   key={item}
                   href="#"
@@ -99,7 +100,7 @@ export default function Navbar() {
 
                   <User />
                 </div>
-              </>
+              </React.Fragment>
             ))}
           </div>
 
