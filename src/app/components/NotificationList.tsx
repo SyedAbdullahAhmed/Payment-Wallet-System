@@ -114,3 +114,54 @@ const NotificationsList = ({sideBarOpen}: any) => {
 };
 
 export default NotificationsList;
+
+
+// getuserid
+// find all docs transaction in reference and userid
+
+// if userid 
+  // - get sendername using userid
+  // - get receivername using refernceId
+  // - get date from createdAT
+  // - type: sender
+  // - amount: 20 send by me
+
+// if referenceid 
+  // - get sendername using userid
+  // - get receivername using refernceId
+  // - get date from createdAT
+  // - type: receiver
+  // - amount: 20 received by me
+
+// combine all data in form of 
+// [
+//    { 
+//     _id: '1', 
+//     senderName: 'Alice', 
+//     receiverName: 'You', 
+//     amount: 50.00, 
+//     date: new Date(2023, 10, 15, 10, 30).toISOString(), 
+//     type: 'received' 
+//   }
+// ]
+
+
+// *) post video on linkedin
+// *) give video to whatsapp
+
+// - notification list
+// - add email code in sendPayment
+// - complete dashboard api's
+// - delete notification
+// - see notification using private after data decrption
+
+
+// add good UI template
+// uncomment arcjet 
+// uncomment email
+// refactor code
+
+// remove browser errors
+// npm run build
+
+// deploy

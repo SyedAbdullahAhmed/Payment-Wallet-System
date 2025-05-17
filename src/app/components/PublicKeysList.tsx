@@ -1,9 +1,14 @@
 'use client'; // This component uses client-side interactivity (useState, navigator.clipboard)
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/app/components/Navbar';
 import { addToast } from "@heroui/react";
-
+import wait from '@/app/utils/wait';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { BASE_URL } from "@/contants"
+import Cookies from 'js-cookie';
 
 // A simple copy icon (Heroicons - ClipboardIcon)
 const ClipboardIcon = ({ className }: { className?: string }) => (
@@ -59,6 +64,26 @@ const publicKeyData: KeyData[] = [
 ];
 
 export default function PublicKeysList({ sideBarOpen }: any) {
+
+  const [publicKeyData, setPublicKeyData] = useState([]);
+  const [keys, setKeys] = useState<KeyData[]>([]);
+
+  useEffect(() => {
+   const fetchKeys = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/keys/get-public-keys`
+      );
+      console.log(res.data.data);
+      setPublicKeyData(res.data.data);
+    } catch (error) {
+      console.error('Error fetching keys:', error);
+    }
+   }
+
+   fetchKeys();
+  }, []);
+
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
 
   // Modal states
@@ -97,9 +122,9 @@ export default function PublicKeysList({ sideBarOpen }: any) {
           </div>
 
           {/* Data Rows */}
-          {publicKeyData.map((item) => (
+          {publicKeyData.map((item: any) => (
             <div
-              key={item.id}
+              key={item?._id}
               className="flex flex-col sm:flex-row items-start sm:items-center py-3 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors duration-150"
             >
               <div className="w-full sm:w-2/5 mb-1 sm:mb-0">
@@ -114,11 +139,11 @@ export default function PublicKeysList({ sideBarOpen }: any) {
               </div>
               <div className="w-full sm:w-10 flex-shrink-0 flex sm:justify-end">
                 <button
-                  onClick={() => handleCopy(item.publicKey, item.id)}
+                  onClick={() => handleCopy(item.publicKey, item._id)}
                   title="Copy public key"
                   className="p-1.5 rounded-md text-gray-500 hover:text-green-600 hover:bg-indigo-100 focus:outline-none  transition-colors duration-150"
                 >
-                  {copiedKeyId === item.id ? (
+                  {copiedKeyId === item._id ? (
                     <CheckIcon className=" cursor-pointer w-5 h-5 text-green-500" />
                   ) : (
                     <ClipboardIcon className=" cursor-pointer w-5 h-5" />
