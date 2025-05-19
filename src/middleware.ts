@@ -82,7 +82,7 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-xport const config = {
+export const config = {
   matcher: [
     '/dashboard',
     '/paymentform',
