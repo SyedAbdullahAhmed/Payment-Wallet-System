@@ -82,9 +82,11 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = {
+xport const config = {
   matcher: [
-    '/dashboard',
-    '/paymentform'
+    '/dashboard/:path*',
+    '/paymentform/:path*',
+    '/signin',
+    '/signup'
   ],
 }
