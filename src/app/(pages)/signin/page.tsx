@@ -76,9 +76,9 @@ export default function LoginPage() {
 
             router.push('/paymentform')
         } catch (err: any) {
-            console.error('Verification error:', err.response.data.message);
-            toast.error(err.response.data.message || err.messsage)
-            setError(err.message || 'An unexpected error occurred.');
+            console.error('Verification error:', err?.response?.data?.message);
+            toast.error(err?.response.data?.message || err?.messsage)
+            setError(err?.message || 'An unexpected error occurred.');
         } finally {
             setIsLoading(false);
         }
