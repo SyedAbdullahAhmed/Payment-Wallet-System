@@ -84,9 +84,9 @@ export async function middleware(request: NextRequest) {
 
 xport const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/paymentform/:path*',
+    '/dashboard',
+    '/paymentform',
     '/signin',
-    '/signup'
+    '/signup',
   ],
 }
