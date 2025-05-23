@@ -73,6 +73,8 @@ export default function SignUpPage() {
       email,
       password
     }
+    console.log(BASE_URL);
+    
 
     try {
       setIsLoading(true);

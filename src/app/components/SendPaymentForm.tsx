@@ -39,11 +39,11 @@ export default function SendPaymentForm() {
       setIsLoading(false);
       return;
     }
-    if (!privateKey.trim()) {
-      setError('Receiver Public Key is required.');
-      setIsLoading(false);
-      return;
-    }
+    // if (!privateKey.trim()) {
+    //   setError('Receiver Public Key is required.');
+    //   setIsLoading(false);
+    //   return;
+    // }
     if (!amount || !confirmAmount) {
       setError('Amount and Confirm Amount are required.');
       setIsLoading(false);
@@ -76,7 +76,7 @@ export default function SendPaymentForm() {
       const data = {
         receiverPublicKey: receiverKey,
         amount: numAmount,
-        senderPrivateKey: privateKey
+        // senderPrivateKey: privateKey
       }
       const res = await axios.post(`${BASE_URL}/api/payment/send-payment`, data, 
         {
@@ -91,7 +91,7 @@ export default function SendPaymentForm() {
       setAmount('')
       setConfirmAmount('')
       setReceiverKey('')
-      setPrivateKey('')
+      // setPrivateKey('')
 
       router.push('/dashboard')
     } catch (err: any) {
@@ -131,7 +131,7 @@ export default function SendPaymentForm() {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label
             htmlFor="privateKey"
             className="block text-sm font-medium text-slate-700 mb-1"
@@ -149,7 +149,7 @@ export default function SendPaymentForm() {
             placeholder="Enter your's private key (e.g., 0xAbC...)"
             className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-slate-900"
           />
-        </div>
+        </div> */}
 
         {/* Amount */}
         <div className="relative">

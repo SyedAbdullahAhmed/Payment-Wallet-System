@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // If no token and route is protected, redirect to /signin
   if (!token && !isPublic) {
+    console.log('No token found, redirecting to /signin');
     return NextResponse.redirect(new URL('/signin', request.url));
   }
 
@@ -77,6 +78,9 @@ export async function middleware(request: NextRequest) {
   if (payment === false || payment === 'false') {
     return NextResponse.redirect(new URL('/paymentform', request.url));
   }
+  if(pathname === '/'){
+    return NextResponse.redirect(new URL('/signin', request.url));
+  }
   
   // Allow access to dashboard and other protected routes when payment is completed
   return NextResponse.next();
@@ -88,5 +92,10 @@ export const config = {
     '/paymentform',
     '/signin',
     '/signup',
+    '/',
+    '/generatekeys',
+    '/keys',
+    '/notifications',
+    '/sendpayment',
   ],
 }
