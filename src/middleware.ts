@@ -15,6 +15,7 @@ export async function middleware(request: NextRequest) {
 
   // Get JWT token from cookies
   const token = request.cookies.get('token')?.value;
+  console.log('Token:', token);
 
   // If no token and route is protected, redirect to /signin
   if (!token && !isPublic) {
