@@ -102,6 +102,7 @@ export default function Dashboard({ sideBarOpen }: any) {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log(Cookies.get('token'))
       setIsLoading(true);
       try {
         const [transactionsRes, balanceRes] = await Promise.all([
