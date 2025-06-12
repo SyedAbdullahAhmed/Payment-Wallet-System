@@ -134,7 +134,7 @@ export default function PaymentPage() {
       setCvc('');
       router.push('/dashboard')
     } catch (err: any) {
-      console.error('Payment form error:', err);
+      // console.error('Payment form error:', err);
       // toast.error(err.response.data.message || err.messsage)
     } finally {
       setIsLoading(false);

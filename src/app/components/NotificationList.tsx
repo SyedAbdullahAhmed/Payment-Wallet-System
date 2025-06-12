@@ -17,6 +17,7 @@ export interface Notification {
   date: string; // ISO date string or similar
   type: 'sent' | 'received'; // To determine message format
   time?: string
+  createdAt: string
 }
 
 
@@ -42,7 +43,7 @@ const NotificationsList = ({ sideBarOpen }: any) => {
         console.log(res.data.data.transactionTransformed);
         setNotifications(res.data.data.transactionTransformed);
       } catch (error) {
-        console.error('Error fetching keys:', error);
+        // console.error('Error fetching keys:', error);
       }
     }
 
@@ -61,11 +62,15 @@ const NotificationsList = ({ sideBarOpen }: any) => {
   };
 
   const formatDateShort = (dateString: string) => {
+    console.log(dateString)
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   const formatAmount = (amount: number) => {
-    return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' }); // Adjust currency as needed
+    return amount > 0 
+      ? amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+      : 0
+
   }
 
   return (
@@ -87,15 +92,15 @@ const NotificationsList = ({ sideBarOpen }: any) => {
                     {notif.type === 'received' ? (
                       <>
                         <span className='text-lg' > <span className="font-semibold text-lg text-indigo-600">{notif.senderName}</span> sent you{' '}</span>
-                        <span className="font-semibold text-lg">{formatAmount(notif.amount)}</span>
+                        <span className="font-semibold text-lg">{formatAmount(notif?.amount)}</span>
                       </>
                     ) : (
                       <>
-                        <span className='text-lg' >You sent <span className="text-lg font-semibold">{formatAmount(notif.amount)}</span> to{' '}</span>
+                        <span className='text-lg' >You sent <span className="text-lg font-semibold">{formatAmount(notif?.amount)}</span> to{' '}</span>
                         <span className="font-semibold text-lg text-indigo-600">{notif.receiverName}</span>
                       </>
                     )}
-                    <span className=" text-gray-500 text-lg ml-1">on {formatDateShort(notif.date)} at {notif.time}</span>
+                    <span className=" text-gray-500 text-lg ml-1">on {formatDateShort(notif?.createdAt)} at {notif.time}</span>
                   </p>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0">

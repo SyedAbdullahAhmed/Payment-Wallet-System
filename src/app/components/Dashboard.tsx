@@ -114,14 +114,16 @@ export default function Dashboard({ sideBarOpen }: any) {
           })
         ]);
 
+        console.log(balanceRes)
+
         setTotalBalance(balanceRes.data.data.totalBalance);
         const formattedTransactions = transformTransactions(transactionsRes.data.data.transactionTransformed || []);
         setTransactions(formattedTransactions);
 
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        // console.error('Error fetching dashboard data:', error);
         setTransactions([]);
-        setTotalBalance(0);
+        // setTotalBalance(0);
       } finally {
         setIsLoading(false);
       }

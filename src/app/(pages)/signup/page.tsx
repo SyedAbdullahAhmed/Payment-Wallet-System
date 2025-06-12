@@ -86,7 +86,7 @@ export default function SignUpPage() {
       setPassword('');
       setIsVerification(true)
     } catch (err: any) {
-      console.error('Signup error:', err);
+      // console.error('Signup error:', err);
       toast.error(err.response.data.message || err.messsage)
     } finally {
       setIsLoading(false);
@@ -103,7 +103,7 @@ export default function SignUpPage() {
       setCode('');
       router.push('/signin')
     } catch (err: any) {
-      console.error('Verification error:', err);
+      // console.error('Verification error:', err);
       toast.error(err.response.data.message || err.messsage)
     } finally {
       setIsLoading(false);

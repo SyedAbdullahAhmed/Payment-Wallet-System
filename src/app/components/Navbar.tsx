@@ -26,7 +26,7 @@ export default function Navbar() {
         const email = typeof decoded?.payload?.email === 'string' ? decoded.payload.email : '';
         setEmail(email);
       } catch (err) {
-        console.error('Token verification failed:', err);
+        // console.error('Token verification failed:', err);
       }
     };
 

@@ -85,9 +85,20 @@ export default function SendPaymentForm() {
           }
         }
       );
+
+      toast.success(res.data.message);
+
+      const res2 = await axios.post(`${BASE_URL}/api/payment/send-mails`,
+        { receiverId: res.data.data.transaction.referenceId }, 
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`
+          }
+        }
+      );
       console.log(res.data.message)
       await wait(2000);
-      toast.success(res.data.message);
+      toast.success(res2.data.message);
       setAmount('')
       setConfirmAmount('')
       setReceiverKey('')
@@ -95,7 +106,7 @@ export default function SendPaymentForm() {
 
       router.push('/dashboard')
     } catch (err: any) {
-      console.error('Payment sending error:', err.response);
+      // console.error('Payment sending error:', err.response);
       toast.error(err?.response?.data?.message || err.messsage)
       setError(err.message || 'An unexpected error occurred.');
     } finally {

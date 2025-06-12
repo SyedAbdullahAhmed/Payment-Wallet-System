@@ -145,7 +145,7 @@ export default function KeyGenerator({ sideBarOpen }: any) {
         setError("Incorrect password. Private key remains hidden.");
       }
     } catch (err: any) {
-      console.error('Password check error:', err);
+      // console.error('Password check error:', err);
       const errorMessage = err.response?.data?.message || err.message || 'An error occurred while verifying password.';
       toast.error(errorMessage);
       setError(errorMessage);

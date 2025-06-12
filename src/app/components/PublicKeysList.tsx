@@ -96,7 +96,7 @@ export default function PublicKeysList({ sideBarOpen }: any) {
         setCopiedKeyId(null);
       }, 2000); // Reset icon after 2 seconds
     } catch (err) {
-      console.error('Failed to copy text: ', err);
+      // console.error('Failed to copy text: ', err);
       // Optionally show an error message to the user
     }
   };
