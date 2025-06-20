@@ -1,5 +1,5 @@
 // const BASE_URL = 'https://payment-wallet-system-backend.vercel.app'
-const BASE_URL = process.env.NODE_ENV === 'production'
+const BASE_URL = process.env.NODE_ENV !== 'development'
   ? 'https://payment-wallet-system-backend.vercel.app'
   : 'http://localhost:3000';
 
