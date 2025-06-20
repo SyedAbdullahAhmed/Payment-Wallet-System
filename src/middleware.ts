@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import * as jose from 'jose'
+import { cookies } from 'next/headers';
 
 const jwtConfig = {
   secret: new TextEncoder().encode('secret'),
@@ -14,8 +15,10 @@ export async function middleware(request: NextRequest) {
   const isPublic = publicPaths.includes(pathname);
 
   // Get JWT token from cookies
-  const token = request.cookies.get('token')?.value;
-  const all = request.cookies.getAll()
+  const cookieStore = cookies();
+  const token = (await cookieStore).get('token')?.value;
+  // const all = request.cookies.getAll()
+  const all = (await cookieStore).getAll(); 
   console.log('All cookies:', all);
   console.log('Token:', token);
 
