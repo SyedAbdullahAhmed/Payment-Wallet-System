@@ -38,41 +38,43 @@ ChartJS.register(
   // TimeSeriesScale
 );
 
-interface ApiTransactionItem {
-  id: string;
-  type: 'sent' | 'received';
-  amount: number | string;
-  date: string;
-  description?: string;
-  senderName?: string;
-  receiverName?: string;
-}
+// interface ApiTransactionItem {
+//   id: string;
+//   type: 'sent' | 'received';
+//   amount: number | string;
+//   date?: string;
+//   createdAt?: string;
+//   description?: string;
+//   senderName?: string;
+//   receiverName?: string;
+// }
 
-interface Transaction {
-  id: string;
-  type: 'sent' | 'received';
-  amount: number;
-  date: string; // ISO date string
-  description?: string;
-  // runningBalance: number; // No longer directly used for main charts
-  time?: string;
-  senderName?: string;
-  receiverName?: string;
-}
+// interface Transaction {
+//   id: string;
+//   type: 'sent' | 'received';
+//   amount: number;
+//   date?: string; // ISO date string
+//   createdAt?: string; // ISO date string
+//   description?: string;
+//   // runningBalance: number; // No longer directly used for main charts
+//   time?: string;
+//   senderName?: string;
+//   receiverName?: string;
+// }
 
-export default function Dashboard({ sideBarOpen }: any) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [totalBalance, setTotalBalance] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export default function Dashboard({ sideBarOpen }) {
+  const [transactions, setTransactions] = useState([]);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // --- Chart Data States ---
-  const [amountTrendData, setAmountTrendData] = useState<any>(null); // For Sent vs Received amounts line chart
-  const [individualSentBarData, setIndividualSentBarData] = useState<any>(null); // For individual sent transaction bars
-  const [individualReceivedBarData, setIndividualReceivedBarData] = useState<any>(null); // For individual received transaction bars
+  const [amountTrendData, setAmountTrendData] = useState(null); // For Sent vs Received amounts line chart
+  const [individualSentBarData, setIndividualSentBarData] = useState(null); // For individual sent transaction bars
+  const [individualReceivedBarData, setIndividualReceivedBarData] = useState(null); // For individual received transaction bars
 
-  function transformTransactions(apiItems: ApiTransactionItem[]): Transaction[] {
+  function transformTransactions(apiItems) {
     return apiItems.map((item, index) => {
-      const transactionDate = new Date(item.date);
+      const transactionDate = new Date(item.createdAt);
 
       let finalDescription = item.description;
       if (!finalDescription) {
@@ -115,10 +117,11 @@ export default function Dashboard({ sideBarOpen }: any) {
         ]);
 
         console.log(balanceRes)
+        console.log(transactionsRes)
 
         setTotalBalance(balanceRes.data.data.totalBalance);
-        const formattedTransactions = transformTransactions(transactionsRes.data.data.transactionTransformed || []);
-        setTransactions(formattedTransactions);
+        const formattedTransactions = transformTransactions(transactionsRes.data.data.transactionTransformed);
+        setTransactions(transactionsRes.data.data.transactionTransformed);
 
       } catch (error) {
         // console.error('Error fetching dashboard data:', error);
@@ -149,17 +152,17 @@ export default function Dashboard({ sideBarOpen }: any) {
     }
 
     const sortedTransactions = [...transactions].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
 
     // --- Data for Sent vs Received Amounts Line Chart ---
     const sentAmountPoints = sortedTransactions
       .filter(tx => tx.type === 'sent')
-      .map(tx => ({ x: new Date(tx.date), y: tx.amount }));
+      .map(tx => ({ x: new Date(tx.createdAt), y: tx.amount }));
 
     const receivedAmountPoints = sortedTransactions
       .filter(tx => tx.type === 'received')
-      .map(tx => ({ x: new Date(tx.date), y: tx.amount }));
+      .map(tx => ({ x: new Date(tx.createdAt), y: tx.amount }));
     
     if(sentAmountPoints.length > 0 || receivedAmountPoints.length > 0) {
       setAmountTrendData({
@@ -198,7 +201,7 @@ export default function Dashboard({ sideBarOpen }: any) {
       setIndividualSentBarData({
         datasets: [{
           label: 'Sent Transaction Amount',
-          data: individualSentTxs.map(tx => ({ x: new Date(tx.date), y: tx.amount })),
+          data: individualSentTxs.map(tx => ({ x: new Date(tx.createdAt), y: tx.amount })),
           backgroundColor: 'rgba(220, 38, 38, 0.6)', // red-600
           borderColor: 'rgb(220, 38, 38)',
           borderWidth: 1,
@@ -214,7 +217,7 @@ export default function Dashboard({ sideBarOpen }: any) {
       setIndividualReceivedBarData({
         datasets: [{
           label: 'Received Transaction Amount',
-          data: individualReceivedTxs.map(tx => ({ x: new Date(tx.date), y: tx.amount })),
+          data: individualReceivedTxs.map(tx => ({ x: new Date(tx.createdAt), y: tx.amount })),
           backgroundColor: 'rgba(22, 163, 74, 0.6)', // green-600
           borderColor: 'rgb(22, 163, 74)',
           borderWidth: 1,
@@ -233,7 +236,7 @@ export default function Dashboard({ sideBarOpen }: any) {
     plugins: {
       tooltip: {
         callbacks: {
-          label: function (context: any) {
+          label: function (context) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -246,7 +249,7 @@ export default function Dashboard({ sideBarOpen }: any) {
             // label += ` on ${formatDate(date, { month: 'short', day: 'numeric' })}`;
             return label;
           },
-          title: function (tooltipItems: any[]) { // Add date to tooltip title
+          title: function (tooltipItems) { // Add date to tooltip title
             if (tooltipItems.length > 0) {
                 const date = new Date(tooltipItems[0].parsed.x);
                 return formatDate(date, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -260,7 +263,7 @@ export default function Dashboard({ sideBarOpen }: any) {
       y: {
         beginAtZero: true, // Amounts generally start at 0
         ticks: {
-          callback: function (value: any) {
+          callback: function (value) {
             return formatCurrency(value, 'USD').replace('.00', '');
           }
         }
@@ -274,15 +277,15 @@ export default function Dashboard({ sideBarOpen }: any) {
       ...commonChartOptionsBase.plugins,
       legend: {
         display: true, // Show legend for sent/received lines
-        position: 'top' as const,
+        position: 'top' ,
       },
     },
     scales: {
       ...commonChartOptionsBase.scales,
       x: {
-        type: 'time' as const,
+        type: 'time',
         time: {
-          unit: 'day' as const, // Adjust unit based on data density (e.g., 'week', 'month')
+          unit: 'day', // Adjust unit based on data density (e.g., 'week', 'month')
           tooltipFormat: 'MMM dd, yyyy HH:mm',
           displayFormats: {
             day: 'MMM dd', // e.g., Aug 20
@@ -292,7 +295,7 @@ export default function Dashboard({ sideBarOpen }: any) {
         ticks: {
           maxRotation: 0,
           autoSkipPadding: 20,
-          source: 'auto' as const, // Let chart.js decide how many ticks based on space
+          source: 'auto', // Let chart.js decide how many ticks based on space
         }
       },
     }
@@ -309,9 +312,9 @@ export default function Dashboard({ sideBarOpen }: any) {
     scales: {
         ...commonChartOptionsBase.scales,
         x: {
-            type: 'time' as const,
+            type: 'time' ,
             time: {
-                unit: 'day' as const, // Display bars grouped by day initially
+                unit: 'day' , // Display bars grouped by day initially
                 tooltipFormat: 'MMM dd, yyyy HH:mm', // Full date in tooltip
                 displayFormats: {
                     day: 'MMM dd', // Label for days
@@ -323,7 +326,7 @@ export default function Dashboard({ sideBarOpen }: any) {
                 autoSkip: true,
                 maxRotation: 45,
                 minRotation: 0,
-                source: 'auto' as const,
+                source: 'auto' ,
                 // For more control over bar spacing on time scale, you might need to adjust adapter or use category scale with formatted labels
             },
             grid: {
@@ -339,7 +342,7 @@ export default function Dashboard({ sideBarOpen }: any) {
   };
 
 
-  const ChartPlaceholder = ({ message, type = 'default' }: { message: string, type?: 'default' | 'red' | 'green' }) => {
+  const ChartPlaceholder = ({ message, type = 'default' }) => {
     let bgColor = 'bg-slate-50 border-slate-300 text-slate-400';
     if (type === 'red') bgColor = 'bg-red-50 border-red-200 text-red-400';
     if (type === 'green') bgColor = 'bg-green-50 border-green-200 text-green-400';
@@ -368,7 +371,7 @@ export default function Dashboard({ sideBarOpen }: any) {
               <p className="text-sm text-slate-500 mb-4">Shows individual sent (red) and received (green) transaction amounts.</p>
               <div className="h-60 sm:h-72">
                 {isLoading ? <ChartPlaceholder message="Loading chart..." /> :
-                 amountTrendData ? <Line options={amountTrendLineChartOptions as any} data={amountTrendData} /> :
+                 amountTrendData ? <Line options={amountTrendLineChartOptions} data={amountTrendData} /> :
                  <ChartPlaceholder message="No transaction data for trend." />}
               </div>
             </div>
@@ -382,7 +385,7 @@ export default function Dashboard({ sideBarOpen }: any) {
               </p>
               <div className="h-60 sm:h-72">
                 {isLoading ? <ChartPlaceholder message="Loading chart..." type="red" /> :
-                 individualSentBarData ? <Bar options={individualTransactionBarChartOptions as any} data={individualSentBarData} /> :
+                 individualSentBarData ? <Bar options={individualTransactionBarChartOptions } data={individualSentBarData} /> :
                  <ChartPlaceholder message="No sent transactions." type="red" />}
               </div>
             </div>
@@ -394,7 +397,7 @@ export default function Dashboard({ sideBarOpen }: any) {
               </p>
               <div className="h-60 sm:h-72">
                 {isLoading ? <ChartPlaceholder message="Loading chart..." type="green" /> :
-                 individualReceivedBarData ? <Bar options={individualTransactionBarChartOptions as any} data={individualReceivedBarData} /> :
+                 individualReceivedBarData ? <Bar options={individualTransactionBarChartOptions} data={individualReceivedBarData} /> :
                  <ChartPlaceholder message="No received transactions." type="green" />}
               </div>
             </div>
