@@ -1,6 +1,6 @@
 'use client'; // This component uses client-side interactivity (useState, onSubmit)
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; // For the "Log In" link
 import { Eye, EyeOff } from "lucide-react";
 import Spinner from '@/app/components/Spinner';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { BASE_URL } from "@/contants"
+import Cookies from 'js-cookie';
 
 
 const signUpSchema = z.object({
@@ -47,6 +48,15 @@ export default function SignUpPage() {
 
   const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; password?: string }>({});
 
+  useEffect(() => {
+    const verify = async () => {
+      const token = Cookies.get('token')
+      if (token) router.push("/dashboard")
+    }
+    verify()
+  }, [])
+
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,7 +84,7 @@ export default function SignUpPage() {
       password
     }
     console.log(BASE_URL);
-    
+
 
     try {
       setIsLoading(true);
@@ -256,7 +266,7 @@ export default function SignUpPage() {
           )
         }
 
-         { !isVerification && <p className="mt-8 text-center text-sm text-gray-600">
+        {!isVerification && <p className="mt-8 text-center text-sm text-gray-600">
           Already have an account?{' '}
           <Link href="/signin" className="hover:underline font-medium text-indigo-600 hover:text-indigo-500" >
             Sign In

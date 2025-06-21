@@ -1,6 +1,6 @@
 'use client'; // This component uses client-side interactivity (useState, onSubmit)
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { BASE_URL } from "@/contants";
+import Cookies from 'js-cookie';
 
 const loginSchema = z.object({
     email: z
@@ -38,8 +39,16 @@ export default function LoginPage() {
 
     const router = useRouter();
 
+    useEffect(() => {
+        const verify = async () => {
+            const token = Cookies.get('token')
+            if (token) router.push("/dashboard")
+        }
+        verify()
+    }, [])
 
-    const handleSubmit = async (event:any) => {
+
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
         setIsLoading(true);
         setError(null);
@@ -74,7 +83,7 @@ export default function LoginPage() {
             setEmail('');
             setPassword('');
 
-            router.push('/paymentform')
+            router.push('/dashboard')
         } catch (err: any) {
             console.error('Verification error:', err?.response?.data?.message);
             toast.error(err?.response.data?.message || err?.messsage)

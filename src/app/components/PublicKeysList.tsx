@@ -5,6 +5,9 @@ import Navbar from '@/app/components/Navbar';
 import { addToast } from "@heroui/react";
 import axios from 'axios';
 import { BASE_URL } from "@/contants"
+import checkUserVerified from "../utils/verifyToken"
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 // A simple copy icon (Heroicons - ClipboardIcon)
 const ClipboardIcon = ({ className }: { className?: string }) => (
@@ -63,6 +66,8 @@ export default function PublicKeysList({ sideBarOpen }: any) {
 
   const [publicKeyData, setPublicKeyData] = useState([]);
 
+  const router = useRouter()
+
   useEffect(() => {
    const fetchKeys = async () => {
     try {
@@ -78,6 +83,19 @@ export default function PublicKeysList({ sideBarOpen }: any) {
 
    fetchKeys();
   }, []);
+
+  useEffect(() => {
+      const verify = async () => {
+        // debugger;
+        const token = Cookies.get('token')
+        if (!token) router.push("/signin")
+        const isVerified = await checkUserVerified(token)
+        if (!isVerified) router.push("/signin")
+        console.log('User verified:', isVerified)
+      }
+  
+      verify()
+    }, [])
 
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
 

@@ -7,7 +7,8 @@ import { BASE_URL } from "@/contants"; // Make sure this path is correct
 import Cookies from 'js-cookie';
 import Spinner from './Spinner';    // Make sure this path is correct
 import wait from '../utils/wait'; // Make sure this path is correct
-
+import checkUserVerified from "../utils/verifyToken"
+import { useRouter } from 'next/navigation';
 // --- Icons ---
 const ClipboardIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-6 h-6"}>
@@ -39,6 +40,21 @@ export default function KeyGenerator({ sideBarOpen }: any) {
   const layoutClasses = shouldHaveCompactLayout
     ? "mt-2 h-auto px-4"
     : "mt-16 h-auto min-h-[calc(100vh-4rem-env(safe-area-inset-bottom))]";
+
+    const router = useRouter()
+
+    useEffect(() => {
+        const verify = async () => {
+          // debugger;
+          const token = Cookies.get('token')
+          if (!token) router.push("/signin")
+          const isVerified = await checkUserVerified(token)
+          if (!isVerified) router.push("/signin")
+          console.log('User verified:', isVerified)
+        }
+    
+        verify()
+      }, [])
 
 
   useEffect(() => {

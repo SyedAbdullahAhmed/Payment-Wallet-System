@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import wait from '@/app/utils/wait';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import { BASE_URL } from "@/contants";
+import checkUserVerified from "../utils/verifyToken"
+import { useRouter } from 'next/navigation';
 
 // Sample hardcoded card details (DISPLAY ONLY)
 const HARDCODED_CARD_DETAILS = {
@@ -26,6 +27,19 @@ export default function SendPaymentForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const verify = async () => {
+      // debugger;
+      const token = Cookies.get('token')
+      if (!token) router.push("/signin")
+      const isVerified = await checkUserVerified(token)
+      if (!isVerified) router.push("/signin")
+      console.log('User verified:', isVerified)
+    }
+
+    verify()
+  }, [])
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -78,7 +92,7 @@ export default function SendPaymentForm() {
         amount: numAmount,
         // senderPrivateKey: privateKey
       }
-      const res = await axios.post(`${BASE_URL}/api/payment/send-payment`, data, 
+      const res = await axios.post(`${BASE_URL}/api/payment/send-payment`, data,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get('token')}`
@@ -89,7 +103,7 @@ export default function SendPaymentForm() {
       toast.success(res.data.message);
 
       const res2 = await axios.post(`${BASE_URL}/api/payment/send-mails`,
-        { receiverId: res.data.data.transaction.referenceId }, 
+        { receiverId: res.data.data.transaction.referenceId },
         {
           headers: {
             Authorization: `Bearer ${Cookies.get('token')}`

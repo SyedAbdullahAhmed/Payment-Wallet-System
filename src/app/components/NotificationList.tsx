@@ -7,6 +7,8 @@ import Navbar from '@/app/components/Navbar';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { BASE_URL } from "@/contants"
+import checkUserVerified from "../utils/verifyToken"
+import { useRouter } from 'next/navigation';
 
 
 export interface Notification {
@@ -28,6 +30,7 @@ const NotificationsList = ({ sideBarOpen }: any) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     const fetchNotfications = async () => {
@@ -49,6 +52,19 @@ const NotificationsList = ({ sideBarOpen }: any) => {
 
     fetchNotfications();
   }, []);
+
+  useEffect(() => {
+      const verify = async () => {
+        // debugger;
+        const token = Cookies.get('token')
+        if (!token) router.push("/signin")
+        const isVerified = await checkUserVerified(token)
+        if (!isVerified) router.push("/signin")
+        console.log('User verified:', isVerified)
+      }
+  
+      verify()
+    }, [])
 
 
   const handleViewDetails = (notification: Notification) => {
