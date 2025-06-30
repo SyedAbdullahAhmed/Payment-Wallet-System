@@ -82,7 +82,8 @@ export default function LoginPage() {
             await wait(2000);
             toast.success(res.data.message);
             // debugger;
-            Cookies.set('token', res.data.data.token, { expires: new Date(Date.now() + 24 * 60 * 60 * 1000) })
+            Cookies.set('token', res.data.data.token, 
+                { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
             setEmail('');
             setPassword('');
 
