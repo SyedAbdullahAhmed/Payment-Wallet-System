@@ -5,16 +5,18 @@ async function checkUserVerified(token) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({ token }) // Send in body if needed
     })
+
+    console.log(response)
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`)
     }
 
-    console.log(response)
 
     const data = await response.json()
     return data ? true : false

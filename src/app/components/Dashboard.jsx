@@ -79,8 +79,10 @@ export default function Dashboard({ sideBarOpen }) {
   useEffect(() => {
     const verify = async () => {
       // debugger;
+      const tokens = Cookies.get()
+      console.log("Tokens: ", tokens)
       const token = Cookies.get('token')
-      console.log(token)
+      console.log("Token: ", token)
       if (!token) router.push("/signin")
       const isVerified = await checkUserVerified(token)
       if (!isVerified) router.push("/signin")
