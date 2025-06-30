@@ -102,17 +102,17 @@ export default function SendPaymentForm() {
 
       toast.success(res.data.message);
 
-      const res2 = await axios.post(`${BASE_URL}/api/payment/send-mails`,
-        { receiverId: res.data.data.transaction.referenceId },
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get('token')}`
-          }
-        }
-      );
+      // const res2 = await axios.post(`${BASE_URL}/api/payment/send-mails`,
+      //   { receiverId: res.data.data.transaction.referenceId },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${Cookies.get('token')}`
+      //     }
+      //   }
+      // );
       console.log(res.data.message)
       await wait(2000);
-      toast.success(res2.data.message);
+      // toast.success(res2.data.message);
       setAmount('')
       setConfirmAmount('')
       setReceiverKey('')
