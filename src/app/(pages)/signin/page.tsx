@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { BASE_URL } from "@/contants";
 import Cookies from 'js-cookie';
-import { cookies } from 'next/headers';
+
 
 const loginSchema = z.object({
     email: z
@@ -81,7 +81,8 @@ export default function LoginPage() {
             console.log(res.data.message)
             await wait(2000);
             toast.success(res.data.message);
-            Cookies.set('token', res.data.token, { expires: new Date(Date.now() + 24 * 60 * 60 * 1000) })
+            // debugger;
+            Cookies.set('token', res.data.data.token, { expires: new Date(Date.now() + 24 * 60 * 60 * 1000) })
             setEmail('');
             setPassword('');
 
