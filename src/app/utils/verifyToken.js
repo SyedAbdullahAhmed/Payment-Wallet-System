@@ -14,6 +14,8 @@ async function checkUserVerified(token) {
       throw new Error(`API error: ${response.status}`)
     }
 
+    console.log(response)
+
     const data = await response.json()
     return data ? true : false
   } catch (error) {
